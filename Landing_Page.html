@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Music Space</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#09090b',
+                        playerBg: '#121214',
+                        brandViolet: '#7c3aed',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Lock the page to the viewport height so nothing scrolls */
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .player-border {
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        /* Crossfade animation for the screenshot slideshow */
+        @keyframes crossfade {
+            0%, 45% { opacity: 1; }
+            55%, 100% { opacity: 0; }
+        }
+        @keyframes crossfade-delayed {
+            0%, 45% { opacity: 0; }
+            55%, 95% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        .slide-1 { animation: crossfade 8s infinite ease-in-out; }
+        .slide-2 { animation: crossfade-delayed 8s infinite ease-in-out; }
+
+        /* Use small-viewport-height units so mobile browser UI doesn't cause scroll/jump */
+        .full-screen-height {
+            height: 100svh;
+        }
+
+        /* Both real screenshots are 1920x1440px, a clean 4:3 ratio.
+           Sizing from height (not width) means the frame's width is always
+           exactly derived from the ratio — it can never be wider than the image itself. */
+        .preview-frame {
+            aspect-ratio: 4 / 3;
+            height: 62vh;
+            width: auto;
+            max-width: 100%;
+            border: 1px solid rgba(124, 58, 237, 0.35);
+            box-shadow: 0 0 60px -15px rgba(124, 58, 237, 0.35), 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        .preview-frame:hover {
+            box-shadow: 0 0 80px -10px rgba(124, 58, 237, 0.5), 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+        }
+        /* Bounce effect on hover: scales up then slightly overshoots back down */
+        .preview-frame:hover {
+            animation: bounce-hover 0.6s ease;
+        }
+        @keyframes bounce-hover {
+            0%   { transform: scale(1); }
+            30%  { transform: scale(1.06); }
+            55%  { transform: scale(0.98); }
+            75%  { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        /* On narrow screens, height-driven sizing could make the frame wider than the
+           viewport. Below this breakpoint, size from width instead so it never overflows. */
+        @media (max-width: 640px) {
+            .preview-frame {
+                width: 100%;
+                height: auto;
+                max-height: 58vh;
+            }
+        }
+
+        /* Shrink hero text and spacing automatically on short screens (e.g. landscape phones) */
+        @media (max-height: 600px) {
+            .hero-title { font-size: 1.75rem !important; }
+            .hero-text { display: none; }
+            .hero-block { margin-bottom: 1rem !important; }
+        }
+        @media (max-height: 450px) {
+            header { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+            footer { display: none; }
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-gray-200 font-sans full-screen-height flex flex-col justify-between antialiased">
+
+    <header class="w-full max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-6 flex justify-between items-center shrink-0">
+        <span class="font-bold tracking-wider text-xs sm:text-sm text-gray-400">MUSIC PLAYER</span>
+        <!-- Button id used by the redirect script below -->
+        <button id="launchBtn" class="text-xs sm:text-sm bg-brandViolet/10 hover:bg-brandViolet text-brandViolet hover:text-white border border-brandViolet/30 hover:border-brandViolet px-4 sm:px-5 py-2.5 rounded-md font-medium transition-all cursor-pointer hover:shadow-lg hover:shadow-brandViolet/30">
+            Launch the app
+        </button>
+    </header>
+
+    <main class="w-full max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center flex-grow justify-center min-h-0 py-2">
+
+        <div class="hero-block text-center max-w-2xl mb-4 sm:mb-8 md:mb-12 shrink-0">
+            <h1 class="hero-title text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight text-white mb-3 sm:mb-5">
+                Music, <br class="hidden sm:block">the way it should sound.
+            </h1>
+            <p class="hero-text text-gray-400 text-xs sm:text-sm md:text-base font-light">
+                A dark, clean, immersive interface designed to play your tracks without distraction.
+            </p>
+        </div>
+
+        <!-- Player preview: real screenshots are 1920x1440 (4:3). Frame size is driven by height,
+             so its width is always exactly the image's width — never wider, no gray showing on the sides -->
+        <!-- Background is transparent so no visible box/letterboxing shows around the image -->
+        <div id="app" class="preview-frame relative rounded-xl overflow-hidden">
+            <!-- object-cover fills the frame completely so no background box is visible behind the image -->
+            <img src="assets/img/Picture_Music_Player_Macbook.png" alt="MacBook preview" class="slide-1 absolute inset-0 w-full h-full rounded-xl object-cover">
+
+            <img src="assets/img/Picture_Music_Player_iPhone..png" alt="iPhone preview" class="slide-2 absolute inset-0 w-full h-full rounded-xl object-cover opacity-0">
+        </div>
+
+    </main>
+
+    <footer class="w-full max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-8 text-center text-[10px] sm:text-[11px] text-gray-600 tracking-widest uppercase shrink-0">
+        &copy; <span id="currentYear">2026</span> Built for audio interface enthusiasts.
+    </footer>
+
+    <script>
+        // On click, redirect this landing page to index.html (the player app)
+        document.getElementById('launchBtn').addEventListener('click', function () {
+            window.location.href = 'index.html';
+        });
+
+        // Auto-update the copyright year so it's always current, no manual edits needed
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+
+</body>
+</html>
