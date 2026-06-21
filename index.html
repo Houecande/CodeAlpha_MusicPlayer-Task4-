@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aether Player — Music Player</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<div id="mp" role="application" aria-label="Aether Music Player">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-head">
+      <div class="sb-logo">CodeAlpha</div>
+      <div class="sb-title">Aether Player</div>
+    </div>
+    <div class="sb-label">Playlist — 8 titres</div>
+    <div class="track-list" id="track-list" role="list" aria-label="Liste des pistes"></div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- Now Playing -->
+    <div class="now-playing">
+      <div class="art-big" aria-hidden="true">
+        <canvas id="art-main" width="376" height="376"></canvas>
+        <div class="art-ring"></div>
+      </div>
+      <div class="song-info">
+        <div class="song-name" id="s-name">Celestial Drift</div>
+        <div class="song-artist" id="s-artist">Nova Ether</div>
+        <div class="song-album" id="s-album">Signals from the Void · 2024</div>
+      </div>
+      <div class="meta-row">
+        <button class="btn-like" id="btn-like" aria-label="Aimer cette piste">
+          <i class="ti ti-heart" aria-hidden="true"></i>
+        </button>
+        <span class="genre-badge" id="s-genre">Ambient</span>
+        <div class="eq-bars" id="eq-bars" aria-hidden="true">
+          <div class="eq-bar" style="height:6px"></div>
+          <div class="eq-bar" style="height:11px"></div>
+          <div class="eq-bar" style="height:8px"></div>
+          <div class="eq-bar" style="height:14px"></div>
+          <div class="eq-bar" style="height:9px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-area">
+      <div class="prog-wrap" id="prog-wrap"
+           role="slider" aria-label="Progression de la piste"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+           tabindex="0">
+        <div class="prog-fill" id="prog-fill" style="width:0%"></div>
+      </div>
+      <div class="time-row">
+        <span id="t-cur" aria-label="Temps écoulé">0:00</span>
+        <span id="t-dur" aria-label="Durée totale">3:45</span>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls" role="group" aria-label="Contrôles de lecture">
+      <button class="ctrl-btn" id="btn-shuffle" aria-label="Lecture aléatoire" aria-pressed="false">
+        <i class="ti ti-arrows-shuffle" aria-hidden="true"></i>
+      </button>
+      <button class="ctrl-btn" id="btn-prev" aria-label="Piste précédente">
+        <i class="ti ti-player-skip-back" aria-hidden="true"></i>
+      </button>
+      <button class="btn-play" id="btn-play" aria-label="Lecture / Pause">
+        <i class="ti ti-player-play" id="play-icon" aria-hidden="true"></i>
+      </button>
+      <button class="ctrl-btn" id="btn-next" aria-label="Piste suivante">
+        <i class="ti ti-player-skip-forward" aria-hidden="true"></i>
+      </button>
+      <button class="ctrl-btn" id="btn-repeat" aria-label="Répéter la piste" aria-pressed="false">
+        <i class="ti ti-repeat" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <!-- Volume -->
+    <div class="vol-row">
+      <span class="vol-icon" aria-hidden="true"><i class="ti ti-volume"></i></span>
+      <input type="range" class="vol-slider" id="vol-slider"
+             min="0" max="100" value="75" step="1"
+             aria-label="Volume" />
+      <span class="vol-val" id="vol-val">75</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- Tabler Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+
+</body>
+</html>
