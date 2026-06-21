@@ -1,13 +1,6 @@
-/* ════════════════════════════════════════════════════════════
-   JAMENDO CONFIG
-   Free, open music catalog. Create a free account at
-   https://devportal.jamendo.com/ to get your client_id,
-   then paste it below.
-   ════════════════════════════════════════════════════════════ */
-const JAMENDO_CLIENT_ID = "444b0916"; // replace with your own client_id
+const JAMENDO_CLIENT_ID = "444b0916"; 
 const JAMENDO_LIMIT = 15;
 
-// audioformat=mp31 (lighter, mobile/4G friendly) or mp32 (better quality, heavier)
 function buildJamendoUrl() {
   const randomOffset = Math.floor(Math.random() * 200); // varies the selection on each visit
   return `https://api.jamendo.com/v3.0/tracks/?client_id=${JAMENDO_CLIENT_ID}` +
@@ -15,11 +8,6 @@ function buildJamendoUrl() {
     `&imagesize=300&order=popularity_month&offset=${randomOffset}`;
 }
 
-/* ── TRACK DATA ──
-   TRACKS = local songs (assets/songs) + a fresh Jamendo selection,
-   combined every time the site loads. Nothing is cached: closing and
-   reopening the site fetches a new Jamendo batch.
-*/
 let TRACKS = [];
 
 // Local songs, always included in the playlist
@@ -53,6 +41,16 @@ const LOCAL_TRACKS = [
     src: "assets/songs/Madonna - Like A Prayer.mp3",
     color: "#EC407A",
     c2: "#4A148C"
+  },
+  {
+    name: "Hello",
+    artist: "Adele",
+    album: "25",
+    year: 2015,
+    genre: "Pop/Soul",
+    src: "assets/songs/Adele - Hello.mp3",
+    color: "#5C6BC0",
+    c2: "#1A237E"
   }
 ];
 
@@ -499,11 +497,6 @@ document.getElementById('mp').addEventListener('touchend', e => {
   if (Math.abs(dx) > 60) { dx < 0 ? nextTrack() : prevTrack(); }
 });
 
-/* ════════════════════════════════════════════════════════════
-   IMPORT FROM DEVICE (PC / phone) + DRAG & DROP
-   The file never leaves the device: the browser only keeps a
-   temporary local reference (blob:) to play it.
-   ════════════════════════════════════════════════════════════ */
 function addLocalFile(file) {
   if (!file.type.startsWith('audio/')) {
     alert(`"${file.name}" doesn't look like an audio file.`);
@@ -609,12 +602,6 @@ injectExtraStyles();
 buildImportControls();
 buildDragAndDrop();
 
-/* ════════════════════════════════════════════════════════════
-   STARTUP
-   Combine local songs with a fresh Jamendo selection every time
-   the site loads. If Jamendo is unreachable, fall back to local
-   songs only — the player never breaks.
-   ════════════════════════════════════════════════════════════ */
 (async function start() {
   showLoadingState();
 
