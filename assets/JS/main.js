@@ -1,21 +1,42 @@
 /* ── TRACK DATA ──
-   Pour utiliser de vrais fichiers audio, ajoute un champ `src` à chaque objet :
-   src: 'audio/celestial-drift.mp3'
-   Puis dans selectTrack() : audioEl.src = t.src; audioEl.play();
+   Real audio files from assets/songs
 */
 const TRACKS = [
-  { name:"Celestial Drift",   artist:"Nova Ether",    album:"Signals from the Void", year:2024, genre:"Ambient",     dur:225, color:"#8B7CF8", c2:"#3D2B8A" },
-  { name:"Neon Tide",         artist:"Solara",         album:"Ultraviolet",           year:2024, genre:"Electronic",  dur:198, color:"#4FC3F7", c2:"#0D47A1" },
-  { name:"Velvet Hours",      artist:"Mira Dawn",      album:"Soft Architecture",     year:2023, genre:"Chill",       dur:242, color:"#F48FB1", c2:"#880E4F" },
-  { name:"Obsidian Flow",     artist:"Deep Current",   album:"Undertow",              year:2024, genre:"Electronic",  dur:187, color:"#80CBC4", c2:"#00695C" },
-  { name:"Golden Static",     artist:"Auric",          album:"Frequency",             year:2023, genre:"Ambient",     dur:263, color:"#FFD54F", c2:"#E65100" },
-  { name:"Particle Rain",     artist:"Nova Ether",     album:"Signals from the Void", year:2024, genre:"Chill",       dur:211, color:"#CE93D8", c2:"#4A148C" },
-  { name:"Shoreline Echo",    artist:"Mira Dawn",      album:"Soft Architecture",     year:2023, genre:"Ambient",     dur:234, color:"#A5D6A7", c2:"#1B5E20" },
-  { name:"Infrared Pulse",    artist:"Deep Current",   album:"Undertow",              year:2024, genre:"Electronic",  dur:176, color:"#EF9A9A", c2:"#B71C1C" },
+  {
+    name: "Back In Black",
+    artist: "AC/DC",
+    album: "Back In Black",
+    year: 1980,
+    genre: "Hard Rock",
+    src: "assets/songs/AC_DC - Back In Black.mp3",
+    color: "#E53935",
+    c2: "#212121"
+  },
+  {
+    name: "I Against I",
+    artist: "Bad Brains",
+    album: "I Against I",
+    year: 1986,
+    genre: "Hardcore Punk",
+    src: "assets/songs/I Against I.mp3",
+    color: "#FFB300",
+    c2: "#3E2723"
+  },
+  {
+    name: "Like A Prayer",
+    artist: "Madonna",
+    album: "Like A Prayer",
+    year: 1989,
+    genre: "Pop",
+    src: "assets/songs/Madonna - Like A Prayer.mp3",
+    color: "#EC407A",
+    c2: "#4A148C"
+  }
 ];
 
 /* ── HELPERS ── */
 function fmtTime(s) {
+  if (isNaN(s) || s === null) return '0:00';
   const m = Math.floor(s / 60), sec = Math.floor(s % 60);
   return m + ':' + (sec < 10 ? '0' : '') + sec;
 }
@@ -51,9 +72,18 @@ function drawArt(canvas, color, c2, size) {
   }
 }
 
+/* ── AUDIO INSTANCE ── */
+const audio = new Audio();
+
 /* ── INIT ARTWORK ── */
 const artMainCanvas = document.getElementById('art-main');
 drawArt(artMainCanvas, TRACKS[0].color, TRACKS[0].c2, 376);
+
+/* ── UPDATE PLAYLIST COUNT ── */
+const sbLabel = document.querySelector('.sb-label');
+if (sbLabel) {
+  sbLabel.textContent = `Playlist — ${TRACKS.length} titre${TRACKS.length > 1 ? 's' : ''}`;
+}
 
 /* ── BUILD TRACK LIST ── */
 const trackListEl = document.getElementById('track-list');
@@ -65,7 +95,7 @@ TRACKS.forEach((t, i) => {
   item.dataset.index = i;
   item.setAttribute('role', 'listitem');
   item.setAttribute('tabindex', '0');
-  item.setAttribute('aria-label', `${t.name} par ${t.artist}, ${fmtTime(t.dur)}`);
+  item.setAttribute('aria-label', `${t.name} par ${t.artist}`);
 
   const artWrap = document.createElement('div');
   artWrap.className = 't-art';
@@ -79,9 +109,18 @@ TRACKS.forEach((t, i) => {
       <div class="t-name">${t.name}</div>
       <div class="t-artist">${t.artist}</div>
     </div>
-    <div class="t-dur">${fmtTime(t.dur)}</div>
+    <div class="t-dur">--:--</div>
   `;
   item.insertBefore(artWrap, item.firstChild);
+
+  // We can load the duration dynamically for each track in the playlist
+  const tempAudio = new Audio(t.src);
+  tempAudio.addEventListener('loadedmetadata', () => {
+    const durEl = item.querySelector('.t-dur');
+    if (durEl) {
+      durEl.textContent = fmtTime(tempAudio.duration);
+    }
+  });
 
   item.addEventListener('click', () => selectTrack(i, true));
   item.addEventListener('keydown', e => {
@@ -95,8 +134,6 @@ TRACKS.forEach((t, i) => {
 /* ── STATE ── */
 let curIdx   = 0;
 let playing  = false;
-let curTime  = 0;
-let interval = null;
 let shuffle  = false;
 let repeat   = false;
 const liked  = new Set();
@@ -114,18 +151,22 @@ const playIcon = document.getElementById('play-icon');
 const eqBars   = document.getElementById('eq-bars').querySelectorAll('.eq-bar');
 const btnLike  = document.getElementById('btn-like');
 const volVal   = document.getElementById('vol-val');
+const volSlider = document.getElementById('vol-slider');
+
+// Set initial audio source
+audio.src = TRACKS[0].src;
+audio.volume = volSlider.value / 100;
 
 /* ── SELECT TRACK ── */
 function selectTrack(i, autoplay) {
   curIdx  = i;
-  curTime = 0;
   const t = TRACKS[i];
 
   sName.textContent   = t.name;
   sArtist.textContent = t.artist;
   sAlbum.textContent  = t.album + ' · ' + t.year;
   sGenre.textContent  = t.genre;
-  tDur.textContent    = fmtTime(t.dur);
+  tDur.textContent    = '--:--';
   tCur.textContent    = '0:00';
   progFill.style.width = '0%';
   progWrap.setAttribute('aria-valuenow', 0);
@@ -138,37 +179,76 @@ function selectTrack(i, autoplay) {
 
   updateLikeBtn();
 
-  if (autoplay) { playing = false; togglePlay(); }
+  audio.src = t.src;
+  audio.load();
+
+  if (autoplay) {
+    audio.play().then(() => {
+      playing = true;
+      updatePlayState();
+    }).catch(err => {
+      console.log("Autoplay failed/blocked:", err);
+      playing = false;
+      updatePlayState();
+    });
+  } else {
+    playing = false;
+    updatePlayState();
+  }
 }
 
 /* ── PLAY / PAUSE ── */
 function togglePlay() {
-  playing = !playing;
-  playIcon.className = playing ? 'ti ti-player-pause' : 'ti ti-player-play';
-  document.getElementById('btn-play').setAttribute('aria-label', playing ? 'Pause' : 'Lecture');
-
-  if (playing) {
-    interval = setInterval(tick, 500);
-    animEQ(true);
+  if (audio.paused) {
+    audio.play().then(() => {
+      playing = true;
+      updatePlayState();
+    }).catch(err => console.log(err));
   } else {
-    clearInterval(interval);
-    animEQ(false);
+    audio.pause();
+    playing = false;
+    updatePlayState();
   }
 }
 
-/* ── TICK (simulates playback) ── */
-function tick() {
-  curTime += 0.5;
-  const t = TRACKS[curIdx];
-  if (curTime >= t.dur) {
-    if (repeat) { curTime = 0; }
-    else { nextTrack(); return; }
-  }
-  const pct = Math.round((curTime / t.dur) * 100);
+function updatePlayState() {
+  playIcon.className = playing ? 'ti ti-player-pause' : 'ti ti-player-play';
+  document.getElementById('btn-play').setAttribute('aria-label', playing ? 'Pause' : 'Lecture');
+  animEQ(playing);
+}
+
+/* ── AUDIO EVENT LISTENERS ── */
+audio.addEventListener('loadedmetadata', () => {
+  tDur.textContent = fmtTime(audio.duration);
+});
+
+audio.addEventListener('timeupdate', () => {
+  const curTime = audio.currentTime;
+  const duration = audio.duration || 1;
+  const pct = Math.round((curTime / duration) * 100);
   progFill.style.width = pct + '%';
   progWrap.setAttribute('aria-valuenow', pct);
   tCur.textContent = fmtTime(curTime);
-}
+});
+
+audio.addEventListener('ended', () => {
+  if (repeat) {
+    audio.currentTime = 0;
+    audio.play().catch(err => console.log(err));
+  } else {
+    nextTrack();
+  }
+});
+
+audio.addEventListener('play', () => {
+  playing = true;
+  updatePlayState();
+});
+
+audio.addEventListener('pause', () => {
+  playing = false;
+  updatePlayState();
+});
 
 /* ── NAVIGATION ── */
 function nextTrack() {
@@ -179,14 +259,12 @@ function nextTrack() {
 }
 
 function prevTrack() {
-  if (curTime > 3) {
-    curTime = 0;
-    progFill.style.width = '0%';
-    tCur.textContent = '0:00';
+  if (audio.currentTime > 3) {
+    audio.currentTime = 0;
     return;
   }
   const prev = (curIdx - 1 + TRACKS.length) % TRACKS.length;
-  selectTrack(prev, playing);
+  selectTrack(prev, true);
 }
 
 /* ── EQ ANIMATION ── */
@@ -230,16 +308,17 @@ btnLike.addEventListener('click', () => {
 function scrub(e) {
   const rect  = progWrap.getBoundingClientRect();
   const pct   = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-  curTime = pct * TRACKS[curIdx].dur;
-  progFill.style.width = Math.round(pct * 100) + '%';
-  tCur.textContent = fmtTime(curTime);
+  if (audio.duration) {
+    audio.currentTime = pct * audio.duration;
+  }
 }
 
 progWrap.addEventListener('click', scrub);
 
 /* ── VOLUME ── */
-document.getElementById('vol-slider').addEventListener('input', function () {
+volSlider.addEventListener('input', function () {
   volVal.textContent = this.value;
+  audio.volume = this.value / 100;
 });
 
 /* ── BUTTONS ── */
@@ -266,9 +345,9 @@ document.addEventListener('keydown', e => {
   if (e.code === 'ArrowRight')  { e.preventDefault(); nextTrack(); }
   if (e.code === 'ArrowLeft')   { e.preventDefault(); prevTrack(); }
   if (e.code === 'KeyM')        {
-    const vol = document.getElementById('vol-slider');
-    vol.value = vol.value > 0 ? 0 : 75;
-    volVal.textContent = vol.value;
+    volSlider.value = volSlider.value > 0 ? 0 : 75;
+    volVal.textContent = volSlider.value;
+    audio.volume = volSlider.value / 100;
   }
 });
 
