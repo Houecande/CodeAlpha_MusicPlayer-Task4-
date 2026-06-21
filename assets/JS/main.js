@@ -1,5 +1,5 @@
 const JAMENDO_CLIENT_ID = "444b0916"; 
-const JAMENDO_LIMIT = 15;
+const JAMENDO_LIMIT = 200;
 
 function buildJamendoUrl() {
   const randomOffset = Math.floor(Math.random() * 200); // varies the selection on each visit
