@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Music Player — Music Player</title>
+  <title>Music Player</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/CSS/style.css" />
 </head>
-<body>
+<body class="player-body">
 
 <div id="mp" role="application" aria-label="Music Player">
 
@@ -18,8 +18,8 @@
     <div class="sb-head">
       <div class="sb-title">Music Player</div>
     </div>
-    <div class="sb-label">Playlist — 8 titres</div>
-    <div class="track-list" id="track-list" role="list" aria-label="Liste des pistes"></div>
+    <div class="sb-label">Playlist — 8 tracks</div>
+    <div class="track-list" id="track-list" role="list" aria-label="Track list"></div>
   </aside>
 
   <!-- MAIN -->
@@ -37,7 +37,7 @@
         <div class="song-album" id="s-album">Signals from the Void · 2024</div>
       </div>
       <div class="meta-row">
-        <button class="btn-like" id="btn-like" aria-label="Aimer cette piste">
+        <button class="btn-like" id="btn-like" aria-label="Add to favorites">
           <i class="ti ti-heart" aria-hidden="true"></i>
         </button>
         <span class="genre-badge" id="s-genre">Ambient</span>
@@ -54,32 +54,32 @@
     <!-- Progress -->
     <div class="progress-area">
       <div class="prog-wrap" id="prog-wrap"
-           role="slider" aria-label="Progression de la piste"
+           role="slider" aria-label="Track progress"
            aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
            tabindex="0">
         <div class="prog-fill" id="prog-fill" style="width:0%"></div>
       </div>
       <div class="time-row">
-        <span id="t-cur" aria-label="Temps écoulé">0:00</span>
-        <span id="t-dur" aria-label="Durée totale">3:45</span>
+        <span id="t-cur" aria-label="Time elapsed">0:00</span>
+        <span id="t-dur" aria-label="Total duration">3:45</span>
       </div>
     </div>
 
     <!-- Controls -->
-    <div class="controls" role="group" aria-label="Contrôles de lecture">
-      <button class="ctrl-btn" id="btn-shuffle" aria-label="Lecture aléatoire" aria-pressed="false">
+    <div class="controls" role="group" aria-label="Playback controls">
+      <button class="ctrl-btn" id="btn-shuffle" aria-label="Shuffle" aria-pressed="false">
         <i class="ti ti-arrows-shuffle" aria-hidden="true"></i>
       </button>
-      <button class="ctrl-btn" id="btn-prev" aria-label="Piste précédente">
+      <button class="ctrl-btn" id="btn-prev" aria-label="Previous track">
         <i class="ti ti-player-skip-back" aria-hidden="true"></i>
       </button>
-      <button class="btn-play" id="btn-play" aria-label="Lecture / Pause">
+      <button class="btn-play" id="btn-play" aria-label="Play / Pause">
         <i class="ti ti-player-play" id="play-icon" aria-hidden="true"></i>
       </button>
-      <button class="ctrl-btn" id="btn-next" aria-label="Piste suivante">
+      <button class="ctrl-btn" id="btn-next" aria-label="Next track">
         <i class="ti ti-player-skip-forward" aria-hidden="true"></i>
       </button>
-      <button class="ctrl-btn" id="btn-repeat" aria-label="Répéter la piste" aria-pressed="false">
+      <button class="ctrl-btn" id="btn-repeat" aria-label="Repeat track" aria-pressed="false">
         <i class="ti ti-repeat" aria-hidden="true"></i>
       </button>
     </div>

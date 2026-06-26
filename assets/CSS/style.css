@@ -3,11 +3,14 @@
 
 body {
   background: #07070A;
+  font-family: 'Inter', sans-serif;
+}
+
+body.player-body {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  font-family: 'Inter', sans-serif;
   padding: 24px;
 }
 
@@ -407,3 +410,5 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .eq-bar, .btn-play, .ctrl-btn { transition: none; }
 }
+
+/* ─── LANDING PAGE STYLES ─── */
