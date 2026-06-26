@@ -17,31 +17,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="assets/CSS/style.css" />
-<style>
-    /* Intégration propre pour mobile sans déformer le lecteur */
-    @media (max-width: 768px) {
-      /* 1. On cache la sidebar (tracklist) pour redonner toute la largeur au lecteur */
-      .sidebar {
-        display: none !important;
-      }
-      
-      /* 2. On force le conteneur principal à prendre 100% de la largeur */
-      .main {
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 20px !important;
-      }
-
-      /* 3. On réduit la taille du canvas de la pochette pour qu'elle ne pousse pas les contrôles en bas */
-      .art-big canvas {
-        max-width: 280px !important;
-        max-height: 280px !important;
-        width: 100% !important;
-        height: auto !important;
-        margin: 0 auto;
-      }
-    }
-  </style>
 </head>
 
 <body class="player-body">
