@@ -1,195 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Music Player</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/CSS/style.css" />
-  
-  <style>
-    /* Styles correctifs pour optimiser l'espace mobile */
+<style>
+    /* Intégration propre pour mobile sans déformer le lecteur */
     @media (max-width: 768px) {
-      #mp {
-        display: flex !important;
-        flex-direction: column !important;
-        position: relative;
-        height: 100vh;
-        overflow: hidden;
-      }
-      
-      /* La sidebar devient un panneau coulissant ou superposé */
+      /* 1. On cache la sidebar (tracklist) pour redonner toute la largeur au lecteur */
       .sidebar {
-        position: absolute;
-        top: 60px;
-        left: 0;
-        width: 100%;
-        height: calc(100% - 60px);
-        z-index: 50;
-        background: #121214; /* playerBg */
-        transform: translateX(-100%);
-        transition: transform 0.3s ease-in-out;
+        display: none !important;
       }
       
-      /* Classe active pour afficher la playlist */
-      .sidebar.active {
-        transform: translateX(0);
-      }
-      
+      /* 2. On force le conteneur principal à prendre 100% de la largeur */
       .main {
         width: 100% !important;
-        flex-grow: 1;
-        padding: 15px !important;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+        max-width: 100% !important;
+        padding: 20px !important;
       }
 
-      /* Ajustement de la taille du canvas de la pochette sur mobile */
+      /* 3. On réduit la taille du canvas de la pochette pour qu'elle ne pousse pas les contrôles en bas */
       .art-big canvas {
-        max-width: 260px !important;
-        max-height: 260px !important;
+        max-width: 280px !important;
+        max-height: 280px !important;
         width: 100% !important;
         height: auto !important;
-      }
-    }
-    
-    /* Bouton toggle personnalisé en haut de page */
-    .mobile-nav {
-      display: none;
-      width: 100%;
-      padding: 15px 20px;
-      background: rgba(18, 18, 20, 0.8);
-      backdrop-filter: blur(10px);
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-    }
-    
-    @media (max-width: 768px) {
-      .mobile-nav {
-        display: flex;
+        margin: 0 auto;
       }
     }
   </style>
-</head>
-<body class="player-body">
-
-<div class="mobile-nav">
-  <button id="toggle-sidebar" style="background:none; border:none; color:#fff; font-size:20px; cursor:pointer;" aria-label="Toggle Playlist">
-    <i class="ti ti-menu-2"></i>
-  </button>
-  <span style="font-weight: 500; font-size: 14px; color: #fff;">Lecteur de musique</span>
-  <div style="width: 20px;"></div> </div>
-
-<div id="mp" role="application" aria-label="Music Player">
-
-  <aside class="sidebar" id="sidebar">
-    <div class="sb-head">
-      <div class="sb-title">Music Player</div>
-    </div>
-    <div class="sb-label">Playlist — 8 tracks</div>
-    <div class="track-list" id="track-list" role="list" aria-label="Track list"></div>
-  </aside>
-
-  <div class="main">
-
-    <div class="now-playing">
-      <div class="art-big" aria-hidden="true">
-        <canvas id="art-main" width="376" height="376"></canvas>
-        <div class="art-ring"></div>
-      </div>
-      <div class="song-info">
-        <div class="song-name" id="s-name">Celestial Drift</div>
-        <div class="song-artist" id="s-artist">Nova Ether</div>
-        <div class="song-album" id="s-album">Signals from the Void · 2024</div>
-      </div>
-      <div class="meta-row">
-        <button class="btn-like" id="btn-like" aria-label="Add to favorites">
-          <i class="ti ti-heart" aria-hidden="true"></i>
-        </button>
-        <span class="genre-badge" id="s-genre">Ambient</span>
-        <div class="eq-bars" id="eq-bars" aria-hidden="true">
-          <div class="eq-bar" style="height:6px"></div>
-          <div class="eq-bar" style="height:11px"></div>
-          <div class="eq-bar" style="height:8px"></div>
-          <div class="eq-bar" style="height:14px"></div>
-          <div class="eq-bar" style="height:9px"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="progress-area">
-      <div class="prog-wrap" id="prog-wrap"
-           role="slider" aria-label="Track progress"
-           aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
-           tabindex="0">
-        <div class="prog-fill" id="prog-fill" style="width:0%"></div>
-      </div>
-      <div class="time-row">
-        <span id="t-cur" aria-label="Time elapsed">0:00</span>
-        <span id="t-dur" aria-label="Total duration">3:45</span>
-      </div>
-    </div>
-
-    <div class="controls" role="group" aria-label="Playback controls">
-      <button class="ctrl-btn" id="btn-shuffle" aria-label="Shuffle" aria-pressed="false">
-        <i class="ti ti-arrows-shuffle" aria-hidden="true"></i>
-      </button>
-      <button class="ctrl-btn" id="btn-prev" aria-label="Previous track">
-        <i class="ti ti-player-skip-back" aria-hidden="true"></i>
-      </button>
-      <button class="btn-play" id="btn-play" aria-label="Play / Pause">
-        <i class="ti ti-player-play" id="play-icon" aria-hidden="true"></i>
-      </button>
-      <button class="ctrl-btn" id="btn-next" aria-label="Next track">
-        <i class="ti ti-player-skip-forward" aria-hidden="true"></i>
-      </button>
-      <button class="ctrl-btn" id="btn-repeat" aria-label="Repeat track" aria-pressed="false">
-        <i class="ti ti-repeat" aria-hidden="true"></i>
-      </button>
-    </div>
-
-    <div class="vol-row">
-      <span class="vol-icon" aria-hidden="true"><i class="ti ti-volume"></i></span>
-      <input type="range" class="vol-slider" id="vol-slider"
-             min="0" max="100" value="75" step="1"
-             aria-label="Volume" />
-      <span class="vol-val" id="vol-val">75</span>
-    </div>
-
-  </div>
-</div>
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
-
-<script src="assets/JS/main.js"></script>
-
-<script>
-  // Script de gestion du menu Playlist sur mobile
-  const toggleBtn = document.getElementById('toggle-sidebar');
-  const sidebar = document.getElementById('sidebar');
-
-  toggleBtn.addEventListener('click', () => {
-    sidebar.classList.toggle('active');
-    // Change l'icône du menu pour une croix quand il est ouvert
-    const icon = toggleBtn.querySelector('i');
-    if(sidebar.classList.contains('active')) {
-      icon.className = 'ti ti-x';
-    } else {
-      icon.className = 'ti ti-menu-2';
-    }
-  });
-
-  // Fermer la playlist si on clique sur un morceau (optionnel mais ergonomique)
-  document.getElementById('track-list').addEventListener('click', () => {
-    if(window.innerWidth <= 768) {
-      sidebar.classList.remove('active');
-      toggleBtn.querySelector('i').className = 'ti ti-menu-2';
-    }
-  });
-</script>
-</body>
-</html>
