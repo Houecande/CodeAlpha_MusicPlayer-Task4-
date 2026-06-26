@@ -397,18 +397,31 @@ body.player-body {
 
 /* ─── RESPONSIVE ─── */
 @media (max-width: 640px) {
-  #mp { grid-template-columns: 1fr; grid-template-rows: auto 1fr; min-height: unset; }
-  .sidebar { max-height: 200px; border-right: none; border-bottom: 1px solid #1A1A24; }
-  .now-playing { padding: 24px 24px 14px; }
-  .progress-area { padding: 0 24px 8px; }
-  .controls { padding: 4px 24px 10px; }
-  .vol-row { padding: 0 24px 18px; }
-  .art-big { width: 140px; height: 140px; }
+  body.player-body {
+    padding: 12px;
+  }
+  #mp { 
+    grid-template-columns: 1fr; /* Une seule colonne */
+    grid-template-rows: 1fr; 
+    min-height: unset; 
+  }
+  .sidebar { 
+    display: none !important; /* On cache complètement la sidebar sur mobile */
+  }
+  .main {
+    width: 100% !important;
+  }
+  .now-playing { padding: 30px 20px 14px; }
+  .progress-area { padding: 0 20px 8px; }
+  .controls { padding: 4px 20px 10px; }
+  .vol-row { padding: 0 20px 20px; }
+  .art-big { 
+    width: 170px; /* Redimensionnement parfait du disque */
+    height: 170px; 
+  }
 }
 
-/* Reduced motion */
+/* Motion réduite */
 @media (prefers-reduced-motion: reduce) {
   .eq-bar, .btn-play, .ctrl-btn { transition: none; }
 }
-
-/* ─── LANDING PAGE STYLES ─── */
